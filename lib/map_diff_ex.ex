@@ -34,10 +34,10 @@ defmodule MapDiffEx do
     end
   end
   defp do_diff(value1, value2, options) do
-    same_tuples = Dict.get(options, :treat_as_same, [])
+    same_defs = Dict.get(options, :treat_as_same, [])
     accuracy = Dict.get(options, :float_accuracy, nil)
     cond do
-      similar_value?(value1, value2, same_tuples)      -> nil
+      similar_value?(value1, value2, same_defs)      -> nil
       only_diff_in_whitespaces(value1, value2)         -> nil
       similar_float_binaries(value1, value2, accuracy) -> nil
       true                                             -> {value1, value2}
@@ -109,12 +109,21 @@ defmodule MapDiffEx do
     {"List with order: #{left_order}", "List with order: #{right_order}"}
   end
 
-  defp similar_value?(value1, value2, same_tuples) do
-    Enum.any?(same_tuples, fn {left,right} ->
-      case {value1, value2} do
-        {^left, ^right} -> true
-        {^right, ^left} -> true
-        _               -> false
+  defp similar_value?(value1, value2, same_defs) do
+    Enum.any?(same_defs, fn same_def ->
+      if is_function same_def do
+        try do
+          same_def.(value1, value2)
+        rescue _
+          -> false
+        end
+      else
+        {left, right} = same_def
+        case {value1, value2} do
+          {^left, ^right} -> true
+          {^right, ^left} -> true
+          _               -> false
+        end
       end
     end)
   end
