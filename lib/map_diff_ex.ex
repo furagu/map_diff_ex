@@ -118,7 +118,7 @@ defmodule MapDiffEx do
           -> false
         end
       else
-        {left, right} = same_def
+        {left, right} = if (is_list same_def), do: List.to_tuple(same_def), else: same_def
         case {value1, value2} do
           {^left, ^right} -> true
           {^right, ^left} -> true

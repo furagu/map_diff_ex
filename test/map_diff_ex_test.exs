@@ -22,6 +22,13 @@ defmodule MapDiffExTest do
     assert diff(map1, map2, %{treat_as_same: [{nil,""},{nil,"0000-00-00"}]}) == nil
   end
 
+  test "should accept both lists and tuples in treat_as_same configuration option" do
+    map1 = %{key: [%{a: "", b: nil}]}
+    map2 = %{key: [%{a: nil, b: "0000-00-00"}]}
+
+    assert diff(map1, map2, %{treat_as_same: [ {nil,""},[nil,"0000-00-00"]]}) == nil
+  end
+
   test "should return nil when values are not equal but configured to be treated as the same with anonymous functions" do
     map1 = %{key: [%{a: "42"}]}
     map2 = %{key: [%{a: 42}]}
