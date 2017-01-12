@@ -152,6 +152,15 @@ defmodule MapDiffExTest do
     assert diff(map1, map2, %{ignore_list_order: true}) == nil
   end
 
+  test "should ignore list order if option is given, even if there are diffs in the items" do
+    list1 = [%{a: 1, b: 2}, %{c: 3, d: 999}]
+    list2 = [%{c: 3, d: 4}, %{a: 1, b: 2}]
+
+    expected_diff = [%{d: {999, 4}}]
+
+    assert diff(list1, list2, %{ignore_list_order: true}) == expected_diff
+  end
+
   test "should report list which differ in only one element in a more readable way - rhs" do
     map1 = %{a: [1,2]}
     map2 = %{a: [1,2,3]}
