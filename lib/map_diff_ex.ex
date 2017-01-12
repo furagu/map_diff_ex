@@ -89,6 +89,9 @@ defmodule MapDiffEx do
       same_elements?(checksums1, checksums2) && !ignore_list_order ->
         order_diff(checksums1, checksums2)
       true ->
+        list1 = if ignore_list_order, do: Enum.sort(list1), else: list1
+        list2 = if ignore_list_order, do: Enum.sort(list2), else: list2
+
         (0..length(list1)-1)
         |> Enum.map(fn(i) ->
           do_diff(Enum.at(list1, i), Enum.at(list2, i), options)
